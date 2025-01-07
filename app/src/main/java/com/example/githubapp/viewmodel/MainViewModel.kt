@@ -7,8 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.githubapp.model.repository.User
 import com.example.githubapp.model.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -24,7 +28,8 @@ class MainViewModel @Inject constructor(
     /**
      * Viewの状態を[UiState]として表すMutableState
      */
-    val uiState: MutableState<UiState> = mutableStateOf(UiState.Initial)
+    private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Initial)
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     /**
      * 検索フォームに入力された文字列を表すMutableState
@@ -35,13 +40,13 @@ class MainViewModel @Inject constructor(
         val searchQuery: String = searchQuery.value
 
         viewModelScope.launch {
-            uiState.value = UiState.Loading
+            _uiState.value = UiState.Loading
             runCatching {
                 userRepository.getUser(userName = searchQuery)
             }.onSuccess {
-                uiState.value = UiState.Success(user = it)
+                _uiState.value = UiState.Success(user = it)
             }.onFailure {
-                uiState.value = UiState.Failure
+                _uiState.value = UiState.Failure
             }
         }
     }

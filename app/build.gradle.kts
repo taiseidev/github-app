@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.retrofit.serialization.converter)
     implementation(libs.okhttp)
+    implementation(libs.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
